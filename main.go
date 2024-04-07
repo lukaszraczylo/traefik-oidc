@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gdarmont/go-oidc/v3/oidc"
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
-	"github.com/lukaszraczylo/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 )
 

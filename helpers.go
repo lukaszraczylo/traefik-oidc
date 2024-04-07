@@ -3,8 +3,8 @@ package traefikoidc
 import (
 	"net/http"
 
+	"github.com/gdarmont/go-oidc/v3/oidc"
 	"github.com/gorilla/sessions"
-	"github.com/lukaszraczylo/go-oidc/v3/oidc"
 )
 
 func (t *TraefikOidc) handleCallback(rw http.ResponseWriter, req *http.Request) {
