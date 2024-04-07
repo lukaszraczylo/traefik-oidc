@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-jose/go-jose/v3/json"
+	"github.com/gdarmont/go-jose/v3/json"
 )
 
 // rawJSONWebEncryption represents a raw JWE JSON object. Used for parsing/serializing.
@@ -147,7 +147,7 @@ func (parsed *rawJSONWebEncryption) sanitized() (*JSONWebEncryption, error) {
 	if parsed.Protected != nil && len(parsed.Protected.bytes()) > 0 {
 		err := json.Unmarshal(parsed.Protected.bytes(), &obj.protected)
 		if err != nil {
-			return nil, fmt.Errorf("go-jose/go-jose: invalid protected header: %s, %s", err, parsed.Protected.base64())
+			return nil, fmt.Errorf("gdarmont/go-jose: invalid protected header: %s, %s", err, parsed.Protected.base64())
 		}
 	}
 
@@ -157,7 +157,7 @@ func (parsed *rawJSONWebEncryption) sanitized() (*JSONWebEncryption, error) {
 	mergedHeaders := obj.mergedHeaders(nil)
 	obj.Header, err = mergedHeaders.sanitized()
 	if err != nil {
-		return nil, fmt.Errorf("go-jose/go-jose: cannot sanitize merged headers: %v (%v)", err, mergedHeaders)
+		return nil, fmt.Errorf("gdarmont/go-jose: cannot sanitize merged headers: %v (%v)", err, mergedHeaders)
 	}
 
 	if len(parsed.Recipients) == 0 {
@@ -188,7 +188,7 @@ func (parsed *rawJSONWebEncryption) sanitized() (*JSONWebEncryption, error) {
 	for _, recipient := range obj.recipients {
 		headers := obj.mergedHeaders(&recipient)
 		if headers.getAlgorithm() == "" || headers.getEncryption() == "" {
-			return nil, fmt.Errorf("go-jose/go-jose: message is missing alg/enc headers")
+			return nil, fmt.Errorf("gdarmont/go-jose: message is missing alg/enc headers")
 		}
 	}
 
@@ -204,7 +204,7 @@ func (parsed *rawJSONWebEncryption) sanitized() (*JSONWebEncryption, error) {
 func parseEncryptedCompact(input string) (*JSONWebEncryption, error) {
 	parts := strings.Split(input, ".")
 	if len(parts) != 5 {
-		return nil, fmt.Errorf("go-jose/go-jose: compact JWE format must have five parts")
+		return nil, fmt.Errorf("gdarmont/go-jose: compact JWE format must have five parts")
 	}
 
 	rawProtected, err := base64URLDecode(parts[0])
@@ -252,13 +252,13 @@ func (obj JSONWebEncryption) CompactSerialize() (string, error) {
 
 	serializedProtected := mustSerializeJSON(obj.protected)
 
-	return base64JoinWithDots(
-		serializedProtected,
-		obj.recipients[0].encryptedKey,
-		obj.iv,
-		obj.ciphertext,
-		obj.tag,
-	), nil
+	return fmt.Sprintf(
+		"%s.%s.%s.%s.%s",
+		base64.RawURLEncoding.EncodeToString(serializedProtected),
+		base64.RawURLEncoding.EncodeToString(obj.recipients[0].encryptedKey),
+		base64.RawURLEncoding.EncodeToString(obj.iv),
+		base64.RawURLEncoding.EncodeToString(obj.ciphertext),
+		base64.RawURLEncoding.EncodeToString(obj.tag)), nil
 }
 
 // FullSerialize serializes an object using the full JSON serialization format.

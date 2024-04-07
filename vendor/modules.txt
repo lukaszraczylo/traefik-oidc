@@ -1,8 +1,11 @@
-# github.com/go-jose/go-jose/v3 v3.0.3
+# github.com/gdarmont/go-jose/v3 v3.0.1-gda-3
 ## explicit; go 1.12
-github.com/go-jose/go-jose/v3
-github.com/go-jose/go-jose/v3/cipher
-github.com/go-jose/go-jose/v3/json
+github.com/gdarmont/go-jose/v3
+github.com/gdarmont/go-jose/v3/cipher
+github.com/gdarmont/go-jose/v3/json
+# github.com/gdarmont/go-oidc/v3 v3.9.0-gda-3
+## explicit; go 1.19
+github.com/gdarmont/go-oidc/v3/oidc
 # github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid
@@ -12,9 +15,8 @@ github.com/gorilla/securecookie
 # github.com/gorilla/sessions v1.2.2
 ## explicit; go 1.20
 github.com/gorilla/sessions
-# github.com/lukaszraczylo/go-oidc/v3 v3.0.1
-## explicit; go 1.22
-github.com/lukaszraczylo/go-oidc/v3/oidc
+# github.com/stretchr/testify v1.7.0
+## explicit; go 1.13
 # golang.org/x/crypto v0.22.0
 ## explicit; go 1.18
 golang.org/x/crypto/pbkdf2

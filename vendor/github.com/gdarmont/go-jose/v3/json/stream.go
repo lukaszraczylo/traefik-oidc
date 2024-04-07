@@ -201,9 +201,9 @@ func (enc *Encoder) Encode(v interface{}) error {
 	// is required if the encoded value was a number,
 	// so that the reader knows there aren't more
 	// digits coming.
-	e.WriteByte('\n')
+	e.buffer.WriteByte('\n')
 
-	if _, err = enc.w.Write(e.Bytes()); err != nil {
+	if _, err = enc.w.Write(e.buffer.Bytes()); err != nil {
 		enc.err = err
 	}
 	encodeStatePool.Put(e)
@@ -240,6 +240,7 @@ var _ Unmarshaler = (*RawMessage)(nil)
 //	Number, for JSON numbers
 //	string, for JSON string literals
 //	nil, for JSON null
+//
 type Token interface{}
 
 const (

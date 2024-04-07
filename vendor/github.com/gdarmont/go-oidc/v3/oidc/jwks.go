@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	jose "github.com/go-jose/go-jose/v3"
+	jose "github.com/gdarmont/go-jose/v3"
 )
 
 // StaticKeySet is a verifier that validates JWT against a static set of public keys.
