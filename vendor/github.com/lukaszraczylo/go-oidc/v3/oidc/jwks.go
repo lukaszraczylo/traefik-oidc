@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	jose "github.com/go-jose/go-jose/v4"
+	jose "github.com/go-jose/go-jose/v3"
 )
 
 // StaticKeySet is a verifier that validates JWT against a static set of public keys.
@@ -25,9 +25,7 @@ type StaticKeySet struct {
 
 // VerifySignature compares the signature against a static set of public keys.
 func (s *StaticKeySet) VerifySignature(ctx context.Context, jwt string) ([]byte, error) {
-	// Algorithms are already checked by Verifier, so this parse method accepts
-	// any algorithm.
-	jws, err := jose.ParseSigned(jwt, allAlgs)
+	jws, err := jose.ParseSigned(jwt)
 	if err != nil {
 		return nil, fmt.Errorf("parsing jwt: %v", err)
 	}
@@ -129,13 +127,8 @@ var parsedJWTKey contextKey
 func (r *RemoteKeySet) VerifySignature(ctx context.Context, jwt string) ([]byte, error) {
 	jws, ok := ctx.Value(parsedJWTKey).(*jose.JSONWebSignature)
 	if !ok {
-		// The algorithm values are already enforced by the Validator, which also sets
-		// the context value above to pre-parsed signature.
-		//
-		// Practically, this codepath isn't called in normal use of this package, but
-		// if it is, the algorithms have already been checked.
 		var err error
-		jws, err = jose.ParseSigned(jwt, allAlgs)
+		jws, err = jose.ParseSigned(jwt)
 		if err != nil {
 			return nil, fmt.Errorf("oidc: malformed jwt: %v", err)
 		}
