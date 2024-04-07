@@ -1,4 +1,4 @@
-module github.com/lukaszraczylo/traefik-oidc
+module github.com/lukaszraczylo/traefikoidc
 
 go 1.22.1
 
