@@ -11,9 +11,6 @@ require (
 
 require (
 	github.com/go-jose/go-jose/v4 v4.0.1 // indirect
-	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
-	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
 )
