@@ -10,7 +10,7 @@ testData:
   providerURL: https://accounts.google.com
   clientID: 1234567890.apps.googleusercontent.com
   clientSecret: secret
-  callbackURL: https://example.com/oauth2/callback
+  callbackURL: /oauth2/callback
   scopes:
     - openid
     - email
