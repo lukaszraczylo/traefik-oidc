@@ -1,5 +1,10 @@
 package traefikoidc
 
+// constants
+const (
+	cookie_name = "_raczylo_oidc"
+)
+
 type Config struct {
 	ProviderURL          string   `json:"providerURL"`
 	CallbackURL          string   `json:"callbackURL"`

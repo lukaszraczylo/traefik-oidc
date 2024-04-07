@@ -5,18 +5,19 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/gdarmont/go-oidc/v3/oidc"
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
 )
 
 type TraefikOidc struct {
-	next        http.Handler
-	name        string
-	provider    *oidc.Provider
-	oauthConfig oauth2.Config
-	store       *sessions.CookieStore
+	next         http.Handler
+	name         string
+	provider     *oidc.Provider
+	oauthConfig  oauth2.Config
+	store        *sessions.CookieStore
+	redirURLPath string
 }
 
 func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
@@ -31,27 +32,28 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 	oauthConfig := oauth2.Config{
 		ClientID:     config.ClientID,
 		ClientSecret: config.ClientSecret,
-		RedirectURL:  config.CallbackURL,
 		Endpoint:     provider.Endpoint(),
 		Scopes:       append([]string{oidc.ScopeOpenID}, config.Scopes...),
 	}
 
 	return &TraefikOidc{
-		provider:    provider,
-		oauthConfig: oauthConfig,
-		next:        next,
-		name:        name,
-		store:       store,
+		provider:     provider,
+		oauthConfig:  oauthConfig,
+		next:         next,
+		name:         name,
+		store:        store,
+		redirURLPath: config.CallbackURL,
 	}, nil
 }
 
 func (t *TraefikOidc) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	t.oauthConfig.RedirectURL = req.URL.Scheme + "://" + req.URL.Host + t.redirURLPath
 	if req.URL.Path == t.oauthConfig.RedirectURL {
 		t.handleCallback(rw, req)
 		return
 	}
 
-	session, err := t.store.Get(req, "session-name")
+	session, err := t.store.Get(req, cookie_name)
 	if err != nil {
 		http.Error(rw, "Session error: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -59,6 +61,7 @@ func (t *TraefikOidc) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 
 	if t.isUserAuthenticated(req) {
 		t.next.ServeHTTP(rw, req)
+		return
 	}
 
 	csrfToken := uuid.New().String()
@@ -70,12 +73,12 @@ func (t *TraefikOidc) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	// Use the CSRF token as the OIDC "state" parameter for CSRF protection
-	redirectURL := t.oauthConfig.AuthCodeURL(csrfToken, oidc.Nonce(uuid.New().String()))
-	http.Redirect(rw, req, redirectURL, http.StatusFound)
+	oauthRedirectURL := t.oauthConfig.AuthCodeURL(csrfToken, oidc.Nonce(uuid.New().String()))
+	http.Redirect(rw, req, oauthRedirectURL, http.StatusFound)
 }
 
 func (t *TraefikOidc) isUserAuthenticated(req *http.Request) bool {
-	session, err := t.store.Get(req, "session-name")
+	session, err := t.store.Get(req, cookie_name)
 	if err != nil {
 		return false
 	}

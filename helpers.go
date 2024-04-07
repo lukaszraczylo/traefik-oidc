@@ -3,14 +3,14 @@ package traefikoidc
 import (
 	"net/http"
 
-	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/gdarmont/go-oidc/v3/oidc"
 	"github.com/gorilla/sessions"
 )
 
-func (t *TraefikOidc) handleCallback(rw http.ResponseWriter, req *http.Request) {
+func (t *TraefikOidc) handleCallback(rw http.ResponseWriter, req *http.Request) (authWentFine bool) {
 	ctx := req.Context()
 
-	session, err := t.store.Get(req, "session-name")
+	session, err := t.store.Get(req, cookie_name)
 	if err != nil {
 		http.Error(rw, "Session error: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -54,4 +54,6 @@ func (t *TraefikOidc) handleCallback(rw http.ResponseWriter, req *http.Request) 
 		http.Error(rw, "Failed to save session: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	return true
 }
