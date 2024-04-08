@@ -47,7 +47,7 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 }
 
 func (t *TraefikOidc) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	t.oauthConfig.RedirectURL = req.URL.Scheme + "://" + req.URL.Host + t.redirURLPath
+	t.oauthConfig.RedirectURL = req.URL.Host + t.redirURLPath
 	if req.URL.Path == t.oauthConfig.RedirectURL {
 		t.handleCallback(rw, req)
 		return
