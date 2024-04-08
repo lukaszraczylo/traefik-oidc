@@ -50,7 +50,6 @@ func (t *TraefikOidc) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	t.oauthConfig.RedirectURL = req.URL.Host + t.redirURLPath
 	if req.URL.Path == t.oauthConfig.RedirectURL {
 		t.handleCallback(rw, req)
-		return
 	}
 
 	session, err := t.store.Get(req, cookie_name)
